@@ -1,300 +1,635 @@
 # CS509 Laboratory Repository
 
 ## Repository Overview
-This repository contains the **Individual (Single Task)** assignment work for CS509
-(First-Year M.Tech CSE, 2026). It covers **Assignment 1 - Single Task**, split into two
-parts as required by the assignment specification:
 
-1. **Matrix Multiplication (GEMM)** - Simple implementation and Blocking implementation,
-   kept in **separate source/driver files** so each can be built, run, and timed
-   independently while still reading the exact same input file for a fair comparison.
-2. **CSR (Compressed Sparse Row) Graph** - adjacency-list-to-CSR conversion helper, with
-   test cases for **all five required graph sizes** (10, 100, 10,000, 50,000, 100,000
-   vertices).
+This repository contains the implementations for the CS509 laboratory assignments.
 
-The Buddy tasks (BFS, DFS, SSSP) are out of scope for this repository - they belong to the
-paired repository (`CS509_<2026CSM1022>_<2026AIM1010>`) per the lab guidelines.
+The repository covers matrix multiplication, graph representation using Compressed Sparse Row (CSR), and shortest-path algorithms including Bellman-Ford and Floyd-Warshall.
 
-## Student Details
-- **Name:** Naman Kaundal
-- **Entry Number:** `ENTRYNUMBER` (placeholder - replace with actual entry number)
-- **Mode:** Individual (Single Task)
+The implementations are written in C++ and include separate source files, drivers, test cases, and a common wrapper for compilation and execution.
+
+---
+
+## Student
+
+**Student Name:** Naman Kaundal
+**Entry Number:** 2026AIM1010
+**Programme:** M.Tech Artificial Intelligence
+**Course:** CS509
+
+---
 
 ## Language and Environment
-- **Language:** C++ (C++17)
-- **Compiler:** g++ (GCC) 13.3.0, tested with `-std=c++17 -O2 -Wall`
-- **OS used for measurements:** Linux x86_64 (container environment); replace with your
-  own machine's OS/CPU details before submission.
-- **Build tool:** plain `g++` invocations (see Compilation sections below); no external
-  build system is required.
+
+* **Programming Language:** C++
+* **Standard:** C++17
+* **Compiler:** GNU G++
+* **Optimization:** `-O2`
+* **Warnings:** `-Wall`
+* **Operating System:** Windows
+* **Shell used for execution:** PowerShell
+* **Editor:** Visual Studio Code
+
+Compilation example:
+
+```powershell
+g++ -std=c++17 -O2 -Wall source_file.cpp driver_file.cpp -o program.exe
+```
+
+---
 
 ## Directory Structure
-```
-CS509_ENTRYNUMBER/
-|-- README.md                              <- this file
-|-- common_wrapper/
-|   `-- wrapper.cpp                        <- repository-level menu (build/run any assignment)
-|-- assignment_01/
-|   |-- 01_Matrix_Multiplication/          <- GEMM (Single Task, part 1)
-|   |   |-- src/
-|   |   |   |-- gemm_simple.h/.cpp         <- GEMM Simple  (separate file, as required)
-|   |   |   |-- gemm_blocking.h/.cpp       <- GEMM Blocking (separate file, as required)
-|   |   |   `-- gemm_io.h                  <- shared read/print helpers (untimed I/O only)
-|   |   |-- driver/
-|   |   |   |-- driver_gemm_simple.cpp     <- runs + times GEMM Simple only
-|   |   |   `-- driver_gemm_blocking.cpp   <- runs + times GEMM Blocking only
-|   |   |-- tests/
-|   |   |   `-- gemm_test_01.txt ... gemm_test_06.txt
-|   |   `-- outputs/                       <- optional saved run outputs
-|   `-- 02_CSR_Graph/                      <- CSR (Single Task, part 2)
-|       |-- src/
-|       |   `-- csr.h / csr.cpp            <- adjacency-list -> CSR conversion helper
-|       |-- driver/
-|       |   `-- driver_csr.cpp             <- reads graph, converts to CSR, times, prints
-|       |-- tests/
-|       |   `-- csr_10.txt, csr_100.txt, csr_10000.txt, csr_50000.txt, csr_100000.txt
-|       `-- outputs/                       <- optional saved run outputs
-`-- tools/
-    |-- generate_gemm.py                   <- generates random GEMM test files of any size
-    `-- generate_graph.py                  <- generates random graph test files of any size
-```
 
-## Common Wrapper: Build and Usage
-The common wrapper is the single repository-level entry point. It does **not** replace the
-per-assignment drivers - it compiles and invokes them.
-
-**Build:**
-```bash
-cd common_wrapper
-g++ -O2 -std=c++17 -Wall wrapper.cpp -o wrapper
+```text
+CS509_2026AIM1010/
+│
+├── assignment_01/
+│   ├── 01_GEMM/
+│   │   ├── src/
+│   │   ├── driver/
+│   │   └── tests/
+│   │
+│   └── 02_CSR_Graph/
+│       ├── src/
+│       ├── driver/
+│       └── tests/
+│
+├── assignment_02/
+│   ├── 01_Bellman_Ford/
+│   │   ├── src/
+│   │   ├── driver/
+│   │   └── tests/
+│   │
+│   └── 02_Floyd_Warshall/
+│       ├── src/
+│       ├── driver/
+│       └── tests/
+│
+├── common_wrapper/
+│   └── wrapper.cpp
+│
+└── README.md
 ```
-
-**Run:**
-```bash
-./wrapper
-```
-
-You will see a menu:
-```
-[1] GEMM - Simple              (assignment_01/01_Matrix_Multiplication)
-[2] GEMM - Blocking            (assignment_01/01_Matrix_Multiplication)
-[3] CSR Graph Conversion       (assignment_01/02_CSR_Graph)
-------------------------------------------------
-[L] List available algorithms
-[C] Compile a selected assignment
-[R] Run one test file for a selected assignment
-[A] Run ALL test files for a selected assignment
-[B] Compile and run ALL submitted algorithms
-[Q] Quit
-```
-- `C` then a number compiles that driver.
-- `R` lets you pick one test file from that algorithm's `tests/` folder to run.
-- `A` runs every test file belonging to the selected algorithm.
-- `B` compiles and runs every registered algorithm against all of its test files in one go.
-- Clear error messages are printed for missing executables, missing test files, or invalid
-  menu selections.
-
-## General Conventions
-- **Test files:** one test case per file, named with a clear prefix
-  (`gemm_test_NN.txt`, `csr_<V>.txt`).
-- **Timing:** every driver starts a `std::chrono::high_resolution_clock` timer immediately
-  before calling the algorithm and stops it immediately after. File I/O, parsing, and
-  result printing are always outside the timed region. Reported unit is **milliseconds
-  (ms)**.
-- **CSR conversion:** treated strictly as preprocessing. Its own execution time is reported
-  by `driver_csr` for reference/demonstration of the helper function; per the assignment
-  spec this conversion time must never be counted as part of a graph algorithm's runtime
-  (relevant once BFS/DFS/SSSP are implemented in the Buddy assignment).
-- **Outputs:** each driver prints the result (matrix or CSR arrays) followed by
-  `Execution time: <value> ms`.
 
 ---
 
-## Assignment 01 - Single Task (Individual)
+# Common Wrapper: Build and Usage
 
-### Assignment Mode
-Individual (Single task, per CS509 Assignment 1 instructions).
+The common wrapper provides a single interface for compiling and running the assignments.
 
-### Objective
-1. Implement General Matrix Multiplication (GEMM) two ways - a direct/simple triple
-   nested-loop version and a blocking (tiled) version, **kept in separate files** - and
-   confirm both produce identical results while comparing their execution times.
-2. Implement a reusable helper function that converts a graph's adjacency-list
-   representation into Compressed Sparse Row (CSR) format, tested on all five required
-   graph sizes (10, 100, 10,000, 50,000, 100,000 vertices).
+It provides the following options:
+
+```text
+1. Compile all assignments
+2. Run GEMM
+3. Run CSR Graph
+4. Run Bellman-Ford
+5. Run Floyd-Warshall
+0. Exit
+```
+
+### Compilation
+
+From the repository root:
+
+```powershell
+g++ -std=c++17 -O2 -Wall .\common_wrapper\wrapper.cpp -o .\wrapper.exe
+```
+
+### Execution
+
+```powershell
+.\wrapper.exe
+```
+
+Select option `1` to compile all assignment executables.
+
+The wrapper generates:
+
+```text
+gemm.exe
+csr.exe
+bellman_ford.exe
+floyd_warshall.exe
+```
 
 ---
 
-### Part 1: Matrix Multiplication (`01_Matrix_Multiplication/`)
+# Assignment 01 - GEMM and CSR Graph
 
-#### Algorithm / Approach
-**GEMM Simple** (`gemm_simple.cpp` -> `gemm_simple()`): standard triple-nested loop -
-`C[i][j] = sum_k A[i][k] * B[k][j]`, iterating `i`, then `j`, then `k`.
+## Assignment Mode
 
-**GEMM Blocking** (`gemm_blocking.cpp` -> `gemm_blocking()`): the `M`, `N`, `K` loops are
-each split into blocks of size `block_size` (default 32, configurable via CLI argument).
-Each block of `C` is accumulated using the corresponding blocks of `A` and `B`, so a block
-stays resident in cache while it is reused across the inner block computation.
-Mathematically it computes exactly the same sum as the simple version, just in a different
-iteration order.
+Individual implementation.
 
-The two implementations live in **separate `.h`/`.cpp` files and are run by separate
-driver programs**, so each can be compiled, run, and timed on its own. Both drivers reuse
-the same header-only `gemm_io.h` for reading the input file and printing the result matrix,
-so both implementations are always evaluated on identical input handling - only the
-algorithm itself differs (see section 5.1 of the assignment: "use the same input file for
-both implementations").
+## Objective
 
-#### Input Format
-`gemm_test_NN.txt`:
-```
-M K N
-<A row 0>
-...
-<A row M-1>
-<B row 0>
-...
-<B row K-1>
-```
-`A` is `M x K`, `B` is `K x N`, result `C` is `M x N`.
+The assignment implements:
 
-**Assumptions/constraints:** all matrix values are integers (stored as `long long` to avoid
-overflow on larger test cases); each row is on its own line.
-
-#### File Structure
-```
-01_Matrix_Multiplication/
-|-- src/
-|   |-- gemm_simple.h,   gemm_simple.cpp      - GEMM Simple (separate file)
-|   |-- gemm_blocking.h, gemm_blocking.cpp    - GEMM Blocking (separate file)
-|   `-- gemm_io.h                             - shared file-reading / printing (untimed)
-|-- driver/
-|   |-- driver_gemm_simple.cpp                - runs + times GEMM Simple only
-|   `-- driver_gemm_blocking.cpp              - runs + times GEMM Blocking only
-`-- tests/                                    - gemm_test_01.txt ... gemm_test_06.txt
-```
-
-#### Compilation
-```bash
-# GEMM Simple
-g++ -O2 -std=c++17 -Wall assignment_01/01_Matrix_Multiplication/src/gemm_simple.cpp assignment_01/01_Matrix_Multiplication/driver/driver_gemm_simple.cpp -o driver_gemm_simple.exe
-
-.\driver_gemm_simple.exe assignment_01\01_Matrix_Multiplication\tests\gemm_test_01.txt
-
-
-# GEMM Blocking
-
-
-#### Execution
-g++ -O2 -std=c++17 -Wall assignment_01/01_Matrix_Multiplication/src/gemm_blocking.cpp assignment_01/01_Matrix_Multiplication/driver/driver_gemm_blocking.cpp -o driver_gemm_blocking.exe
-
-(Both are also compiled automatically by `common_wrapper/wrapper.cpp`.)
-
-#### Execution
-```bash
-# GEMM Simple:   ./driver_gemm_simple <input_file>
-.\driver_gemm_simple.exe assignment_01\01_Matrix_Multiplication\tests\gemm_test_01.txt
-
-# GEMM Blocking: ./driver_gemm_blocking <input_file> [block_size]
-.\driver_gemm_blocking.exe assignment_01\01_Matrix_Multiplication\tests\gemm_test_01.txt 32
-```
-
-#### Test Cases and Result Table
-All six test files were generated (`gemm_test_03`-`06` via `tools/generate_gemm.py` with a
-fixed seed, for reproducibility) and every case was run through both drivers; `Simple` and
-`Blocking` outputs were diffed and matched exactly on every test.
-
-| Test File | Input Type / Size | Expected Output | Actual Output | Simple Time | Blocking Time | Block Size | Status |
-|---|---|---|---|---|---|---|---|
-| gemm_test_01.txt | 2x3 and 3x2 (assignment PDF example) | C = [[58,64],[139,154]] | C = [[58,64],[139,154]] | 0.000889 ms | 0.001754 ms | 32 | Pass |
-| gemm_test_02.txt | 3x3 and 3x3 (hand-crafted, with negatives) | C = [[3,-2,5],[6,2,1],[10,4,2]] | C = [[3,-2,5],[6,2,1],[10,4,2]] | 0.000725 ms | 0.000791 ms | 32 | Pass |
-| gemm_test_03.txt | 100x150 and 150x80 (random, seed=7) | Result matrix (100x80) | Matches Simple output | 6.469 ms | 0.833 ms | 32 | Pass |
-| gemm_test_04.txt | 200x200 and 200x200 (random, seed=42) | Result matrix (200x200) | Matches Simple output | 7.178 ms | 5.663 ms | 32 | Pass |
-| gemm_test_05.txt | 500x500 and 500x500 (random, seed=123) | Result matrix (500x500) | Matches Simple output | 186.404 ms | 91.872 ms | 32 | Pass |
-| gemm_test_06.txt | 600x300 and 300x400 (random, seed=99) | Result matrix (600x400) | Matches Simple output | 82.436 ms | 56.512 ms | 32 | Pass |
-
-*Timings above were measured in the development container (1 vCPU); re-run on your own
-machine and record fresh numbers with your machine's specs (see Language and Environment
-section). Small (test_01/02) timings are noisy at sub-microsecond scale - run multiple
-times and average if more precision is needed (assignment section 8).*
-
-#### Complexity
-- **GEMM Simple:** Time O(M·K·N), Space O(M·N) for the output (plus O(M·K + K·N) input).
-- **GEMM Blocking:** Time O(M·K·N) (same asymptotic complexity; improves cache locality,
-  not asymptotic complexity), Space O(M·N). Blocking's benefit grows with matrix size, as
-  seen in the timing table above (test_03/05/06 show a larger speed-up than the small
-  test_01/02 cases where overhead dominates).
+1. General Matrix-Matrix Multiplication (GEMM)
+2. A blocked version of GEMM
+3. Conversion of an adjacency-list graph representation into CSR format
 
 ---
 
-### Part 2: CSR Graph (`02_CSR_Graph/`)
+# Assignment 01 - GEMM
 
-#### Algorithm / Approach
-**CSR Conversion** (`convertAdjListToCSR` in `csr.cpp`): given `V` and an adjacency list
-(a `vector` of per-vertex neighbour lists), it:
-1. Computes `row_ptr` via a prefix sum of vertex degrees (`row_ptr[u+1] = row_ptr[u] +
-   degree(u)`).
-2. Allocates `col_idx` and `values` of total size `row_ptr[V]`.
-3. Uses a per-row write cursor (initialised from `row_ptr`) to place each neighbour /
-   weight into its correct slot in a single linear pass.
+## Objective
 
-This runs in O(V + E) time and is treated purely as a preprocessing helper - its own
-timing is reported separately here for demonstration only, and must never be added to a
-graph algorithm's reported runtime once BFS/DFS/SSSP are implemented (Buddy assignment).
+The GEMM implementation performs matrix multiplication and compares a straightforward implementation with a blocked implementation.
 
-#### Input Format
-`csr_<V>.txt`, unweighted adjacency-list format (assignment section 6.1):
-```
-V E
-u0 degree n1 n2 ...
-...
-u(V-1) degree n1 n2 ...
-SOURCE s
-```
-The driver also supports the weighted variant, `u degree n1 w1 n2 w2 ...`, via the
-`--weighted` flag, for reuse when SSSP is implemented in the Buddy assignment.
+Both implementations compute:
 
-**Assumptions/constraints:** vertices are numbered `0` to `V-1`; graphs are undirected, so
-each edge appears in both endpoints' adjacency lists (CSR entry count = 2E); all test
-graphs are randomly generated but kept connected (`tools/generate_graph.py` builds a random
-spanning structure first, then adds extra random edges up to the target average degree).
-
-#### File Structure
-```
-02_CSR_Graph/
-|-- src/csr.h,  csr.cpp      - Adjacency-list -> CSR helper
-|-- driver/driver_csr.cpp    - CSR driver (reads, converts, times, prints)
-`-- tests/                   - csr_10.txt, csr_100.txt, csr_10000.txt, csr_50000.txt, csr_100000.txt
+```text
+C = A × B
 ```
 
-#### Compilation
-```bash
-g++ -O2 -std=c++17 -Wall assignment_01/02_CSR_Graph/src/csr.cpp assignment_01/02_CSR_Graph/driver/driver_csr.cpp -o driver_csr.exe
+for compatible matrices.
 
+## Algorithm / Approach
+
+### Simple GEMM
+
+The conventional triple-loop matrix multiplication approach is used.
+
+For every output element `C[i][j]`, the implementation accumulates:
+
+```text
+A[i][k] × B[k][j]
 ```
-(Also compiled automatically by `common_wrapper/wrapper.cpp`.)
 
-#### Execution
-```bash
-.\driver_csr.exe assignment_01\02_CSR_Graph\tests\csr_10.txt
+over all valid `k`.
+
+### Blocking GEMM
+
+The matrix multiplication is divided into smaller blocks.
+
+Blocking improves cache locality by operating on portions of the matrices that can remain in the processor cache for longer.
+
+---
+
+## Input Format
+
+The GEMM test files contain the matrix dimensions followed by matrix elements according to the assignment specification.
+
+Test files:
+
+```text
+gemm_test_01.txt
+gemm_test_02.txt
+gemm_test_03.txt
+gemm_test_04.txt
+gemm_test_05.txt
+gemm_test_06.txt
 ```
 
-#### Test Cases and Result Table
-All **five required graph sizes** from the assignment (section 4.2) are included as
-committed test files (generated via `tools/generate_graph.py`, average degree 4,
-seed=42, for reproducibility):
+---
 
-| Mode | Test File | Input Type | Input Size | Expected Output | Actual Output | Algorithm Time |
-|---|---|---|---|---|---|---|
-| Single | csr_10.txt | Unweighted adjacency list -> CSR | V = 10, E = 20 | Valid CSR arrays, `col_idx` size = 2E = 40 | row_ptr/col_idx generated, size 40 | 0.0012 ms |
-| Single | csr_100.txt | Unweighted adjacency list -> CSR | V = 100, E = 200 | `col_idx` size = 2E = 400 | row_ptr/col_idx generated, size 400 | 0.0043 ms |
-| Single | csr_10000.txt | Unweighted adjacency list -> CSR | V = 10000, E = 20000 | `col_idx` size = 2E = 40000 | row_ptr/col_idx generated, size 40000 | 0.397 ms |
-| Single | csr_50000.txt | Unweighted adjacency list -> CSR | V = 50000, E = 100000 | `col_idx` size = 2E = 200000 | row_ptr/col_idx generated, size 200000 | 1.990 ms |
-| Single | csr_100000.txt | Unweighted adjacency list -> CSR | V = 100000, E = 200000 | `col_idx` size = 2E = 400000 | row_ptr/col_idx generated, size 400000 | 4.188 ms |
+## File Structure
 
-*Timings above were measured in the development container (1 vCPU); re-run on your own
-machine and record fresh numbers with your machine's specs. Conversion time scales
-linearly with V + E, as expected for the O(V + E) algorithm.*
+```text
+assignment_01/01_GEMM/
+├── src/
+│   └── gemm.cpp
+├── driver/
+│   └── driver_gemm.cpp
+└── tests/
+    ├── gemm_test_01.txt
+    ├── gemm_test_02.txt
+    ├── gemm_test_03.txt
+    ├── gemm_test_04.txt
+    ├── gemm_test_05.txt
+    └── gemm_test_06.txt
+```
 
-#### Complexity
-- **CSR Conversion:** Time O(V + E), Space O(V + E) for `row_ptr`, `col_idx`, `values`.
+---
+
+## Compilation
+
+```powershell
+g++ -std=c++17 -O2 -Wall `
+.\assignment_01\01_GEMM\src\gemm.cpp `
+.\assignment_01\01_GEMM\driver\driver_gemm.cpp `
+-o .\gemm.exe
+```
+
+## Execution
+
+```powershell
+.\gemm.exe "assignment_01/01_GEMM/tests/gemm_test_01.txt"
+```
+
+The same command can be used with the other test files.
+
+---
+
+## Test Cases and Result Table
+
+| Test Case          | Simple GEMM | Blocking GEMM |
+| ------------------ | ----------: | ------------: |
+| `gemm_test_01.txt` |        0 ms |          0 ms |
+| `gemm_test_02.txt` |        0 ms |          0 ms |
+| `gemm_test_03.txt` |        0 ms |          0 ms |
+| `gemm_test_04.txt` |        0 ms |          0 ms |
+| `gemm_test_05.txt` |        0 ms |          0 ms |
+| `gemm_test_06.txt` |        1 ms |      1.999 ms |
+
+The runtimes are machine-dependent and may vary between executions.
+
+---
+
+## Complexity
+
+For matrices of compatible dimensions, conventional GEMM has:
+
+```text
+Time Complexity: O(N³)
+```
+
+for square `N × N` matrices.
+
+The blocked implementation has the same asymptotic complexity but can provide improved cache utilization.
+
+---
+
+## References
+
+* Course assignment specification
+* Standard matrix multiplication algorithm
+* Standard cache-blocking technique
+
+---
+
+# Assignment 01 - CSR Graph
+
+## Objective
+
+The objective is to convert an adjacency-list graph representation into Compressed Sparse Row (CSR) format.
+
+CSR stores graph information using:
+
+* `rowPtr`
+* `colIdx`
+* `weights`
+
+This representation provides compact storage and efficient sequential traversal of outgoing edges.
+
+---
+
+## Algorithm / Approach
+
+The adjacency-list representation is first loaded.
+
+The CSR conversion then constructs:
+
+```text
+rowPtr
+colIdx
+weights
+```
+
+`rowPtr[u]` and `rowPtr[u+1]` identify the range of edges belonging to vertex `u`.
+
+The conversion is treated as preprocessing.
+
+---
+
+## Input Format
+
+The graph input contains the number of vertices and edges followed by adjacency-list information for every vertex.
+
+---
+
+## File Structure
+
+```text
+assignment_01/02_CSR_Graph/
+├── src/
+│   ├── csr_graph.cpp
+│   └── csr_graph.h
+├── driver/
+│   └── driver_csr.cpp
+└── tests/
+    ├── csr_10.txt
+    ├── csr_100.txt
+    ├── csr_10000.txt
+    ├── csr_50000.txt
+    └── csr_100000.txt
+```
+
+---
+
+## Compilation
+
+```powershell
+g++ -std=c++17 -O2 -Wall `
+.\assignment_01\02_CSR_Graph\src\csr_graph.cpp `
+.\assignment_01\02_CSR_Graph\driver\driver_csr.cpp `
+-o .\csr.exe
+```
+
+## Execution
+
+```powershell
+.\csr.exe "assignment_01/02_CSR_Graph/tests/csr_10.txt"
+```
+
+---
+
+## Test Cases and Result Table
+
+| Test Case        | Vertices | Runtime |
+| ---------------- | -------: | ------: |
+| `csr_10.txt`     |       10 |     N/A |
+| `csr_100.txt`    |      100 |     N/A |
+| `csr_10000.txt`  |   10,000 |     N/A |
+| `csr_50000.txt`  |   50,000 |     N/A |
+| `csr_100000.txt` |  100,000 |     N/A |
+
+`N/A` is used because the current CSR driver does not report a timing value.
+
+---
+
+## Complexity
+
+CSR conversion requires processing every vertex and every edge.
+
+```text
+Time Complexity: O(V + E)
+Space Complexity: O(V + E)
+```
+
+---
+
+# Assignment 02 - Bellman-Ford and Floyd-Warshall
+
+## Assignment Mode
+
+Individual implementation.
+
+---
+
+# Assignment 02 - Bellman-Ford
+
+## Objective
+
+The Bellman-Ford algorithm computes shortest-path distances from a specified source vertex and detects reachable negative-weight cycles.
+
+The implementation operates on the CSR representation produced by Assignment 01.
+
+---
+
+## Algorithm / Approach
+
+The algorithm repeatedly relaxes all graph edges.
+
+For a graph with `V` vertices, edges are relaxed up to:
+
+```text
+V - 1
+```
+
+times.
+
+An additional pass checks whether a further relaxation is possible. If so, a reachable negative-weight cycle exists.
+
+An early-termination optimization is used when no distance changes during an iteration.
+
+---
+
+## Input Format
+
+The input uses the adjacency-list graph representation used by the CSR component.
+
+The driver additionally accepts the source vertex.
+
+---
+
+## File Structure
+
+```text
+assignment_02/01_Bellman_Ford/
+├── src/
+│   ├── bellman_ford.cpp
+│   └── bellman_ford.h
+├── driver/
+│   └── driver_bellman_ford.cpp
+└── tests/
+    ├── bf_10.txt
+    ├── bf_100.txt
+    ├── bf_10000.txt
+    ├── bf_50000.txt
+    ├── bf_100000.txt
+    ├── bf_negative_edge.txt
+    └── bf_negative_cycle.txt
+```
+
+---
+
+## Compilation
+
+```powershell
+g++ -std=c++17 -O2 -Wall `
+.\assignment_01\02_CSR_Graph\src\csr_graph.cpp `
+.\assignment_02\01_Bellman_Ford\src\bellman_ford.cpp `
+.\assignment_02\01_Bellman_Ford\driver\driver_bellman_ford.cpp `
+-o .\bellman_ford.exe
+```
+
+## Execution
+
+```powershell
+.\bellman_ford.exe "assignment_02/01_Bellman_Ford/tests/bf_10.txt" 0
+```
+
+The final argument specifies the source vertex.
+
+---
+
+## Test Cases and Result Table
+
+| Test Case               | Source |  Runtime |
+| ----------------------- | -----: | -------: |
+| `bf_10.txt`             |      0 |     0 ms |
+| `bf_100.txt`            |      0 |     0 ms |
+| `bf_10000.txt`          |      0 |     0 ms |
+| `bf_50000.txt`          |      0 | 2.001 ms |
+| `bf_100000.txt`         |      0 |      N/A |
+| `bf_negative_edge.txt`  |      0 |   Tested |
+| `bf_negative_cycle.txt` |      0 |   Tested |
+
+The `bf_100000.txt` test file produced an input-consistency error during the recorded run, so no runtime is reported for it.
+
+---
+
+## Negative-Weight Cycle Test
+
+The negative-cycle test is used to verify that Bellman-Ford identifies a reachable negative-weight cycle.
+
+Expected behavior:
+
+```text
+Negative-weight cycle detected.
+```
+
+---
+
+## Complexity
+
+```text
+Time Complexity: O(VE)
+Space Complexity: O(V)
+```
+
+---
+
+## References
+
+* Course assignment specification
+* Bellman-Ford shortest-path algorithm
+
+---
+
+# Assignment 02 - Floyd-Warshall
+
+## Objective
+
+The Floyd-Warshall algorithm computes shortest paths between all pairs of vertices.
+
+The implementation uses the CSR graph representation as input and constructs an all-pairs distance matrix.
+
+---
+
+## Algorithm / Approach
+
+Initially:
+
+* `dist[i][i] = 0`
+* Direct edges are initialized using their weights.
+* Unreachable pairs are represented using infinity.
+
+For every intermediate vertex `k`, the algorithm checks whether the path:
+
+```text
+i → k → j
+```
+
+is shorter than the currently known path:
+
+```text
+i → j
+```
+
+---
+
+## Input Format
+
+The Floyd-Warshall test files contain a graph represented in the format expected by the Floyd-Warshall loader.
+
+---
+
+## File Structure
+
+```text
+assignment_02/02_Floyd_Warshall/
+├── src/
+│   ├── floyd_warshall.cpp
+│   └── floyd_warshall.h
+├── driver/
+│   └── driver_floyd_warshall.cpp
+└── tests/
+    ├── fw_10.txt
+    ├── fw_100.txt
+    ├── fw_500.txt
+    ├── fw_1000.txt
+    └── fw_2000.txt
+```
+
+---
+
+## Compilation
+
+```powershell
+g++ -std=c++17 -O2 -Wall `
+.\assignment_02\02_Floyd_Warshall\src\floyd_warshall.cpp `
+.\assignment_02\02_Floyd_Warshall\driver\driver_floyd_warshall.cpp `
+-o .\floyd_warshall.exe
+```
+
+## Execution
+
+```powershell
+.\floyd_warshall.exe "assignment_02/02_Floyd_Warshall/tests/fw_10.txt"
+```
+
+---
+
+## Test Cases and Result Table
+
+| Test Case     | Vertices | Runtime |
+| ------------- | -------: | ------: |
+| `fw_10.txt`   |       10 |    0 ms |
+| `fw_100.txt`  |      100 |    0 ms |
+| `fw_500.txt`  |      500 |   91 ms |
+| `fw_1000.txt` |    1,000 |     N/A |
+| `fw_2000.txt` |    2,000 |     N/A |
+
+The runtimes for `fw_1000.txt` and `fw_2000.txt` were not measured because execution was taking too long during the final testing session. No estimated values are reported.
+
+---
+
+## Complexity
+
+```text
+Time Complexity: O(V³)
+Space Complexity: O(V²)
+```
+
+---
+
+## References
+
+* Course assignment specification
+* Floyd-Warshall all-pairs shortest-path algorithm
+
+---
+
+# Overall Compilation and Execution Summary
+
+From the repository root:
+
+```powershell
+g++ -std=c++17 -O2 -Wall .\common_wrapper\wrapper.cpp -o .\wrapper.exe
+```
+
+Run:
+
+```powershell
+.\wrapper.exe
+```
+
+### Menu
+
+```text
+1. Compile all assignments
+2. Run GEMM
+3. Run CSR Graph
+4. Run Bellman-Ford
+5. Run Floyd-Warshall
+0. Exit
+```
+
+Option `1` compiles all assignments.
+
+Options `2`–`5` run the corresponding assignment.
+
+---
+
+# Notes
+
+* All algorithms were implemented in C++17.
+* Compilation was performed using GNU G++.
+* `-O2` optimization was used for benchmark compilation.
+* Runtime measurements are machine-dependent.
+* Input loading and CSR preprocessing are kept separate from algorithm execution where applicable.
+* `N/A` indicates that a reliable runtime was not obtained during testing and is intentionally not replaced with an estimated value.
+* The common wrapper provides a unified compilation and execution interface.
