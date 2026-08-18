@@ -1,272 +1,349 @@
+#include <algorithm>
 #include <cstdlib>
-#include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 
-bool fileExists(const std::string& path)
+using namespace std;
+namespace fs = std::filesystem;
+
+
+bool run(const string& command)
 {
-std::ifstream file(path);
-return file.good();
-}
+    cout << "\n$ " << command << "\n\n";
 
-int runCommand(const std::string& command)
-{
-std::cout << "\n> " << command << "\n\n";
-return std::system(command.c_str());
-}
+    int result = system(command.c_str());
 
-bool compileGEMM()
-{
-return runCommand(
-"g++ -std=c++17 -O2 -Wall "
-"./assignment_01/01_GEMM/src/gemm.cpp "
-"./assignment_01/01_GEMM/driver/driver_gemm.cpp "
-"-o .\\gemm.exe"
-) == 0;
-}
-
-bool compileCSR()
-{
-return runCommand(
-"g++ -std=c++17 -O2 -Wall "
-"./assignment_01/02_CSR_Graph/src/csr_graph.cpp "
-"./assignment_01/02_CSR_Graph/driver/driver_csr.cpp "
-"-o .\\csr.exe"
-) == 0;
-}
-
-bool compileBellmanFord()
-{
-return runCommand(
-"g++ -std=c++17 -O2 -Wall "
-"./assignment_01/02_CSR_Graph/src/csr_graph.cpp "
-"./assignment_02/01_Bellman_Ford/src/bellman_ford.cpp "
-"./assignment_02/01_Bellman_Ford/driver/driver_bellman_ford.cpp "
-"-o .\\bellman_ford.exe"
-) == 0;
-}
-
-bool compileFloydWarshall()
-{
-return runCommand(
-"g++ -std=c++17 -O2 -Wall "
-"./assignment_02/02_Floyd_Warshall/src/floyd_warshall.cpp "
-"./assignment_02/02_Floyd_Warshall/driver/driver_floyd_warshall.cpp "
-"-o .\\floyd_warshall.exe"
-) == 0;
-}
-
-bool compileAll()
-{
-bool ok = true;
-
-std::cout << "\n========== COMPILING GEMM ==========\n";
-if (!compileGEMM())
-    ok = false;
-
-std::cout << "\n========== COMPILING CSR ==========\n";
-if (!compileCSR())
-    ok = false;
-
-std::cout << "\n========== COMPILING BELLMAN-FORD ==========\n";
-if (!compileBellmanFord())
-    ok = false;
-
-std::cout << "\n========== COMPILING FLOYD-WARSHALL ==========\n";
-if (!compileFloydWarshall())
-    ok = false;
-
-return ok;
-
-}
-
-void runGEMM()
-{
-std::string testFile;
-
-std::cout << "Enter GEMM test-file path: ";
-std::getline(std::cin, testFile);
-
-if (!fileExists(testFile))
-{
-    std::cerr << "Error: test file not found.\n";
-    return;
-}
-
-if (!fileExists(".\\gemm.exe"))
-{
-    std::cout << "GEMM executable not found. Compiling...\n";
-
-    if (!compileGEMM())
-    {
-        std::cerr << "GEMM compilation failed.\n";
-        return;
+    if (result != 0) {
+        cout << "\nCommand failed.\n";
+        return false;
     }
+
+    return true;
 }
 
-runCommand(".\\gemm.exe \"" + testFile + "\"");
 
-}
-
-void runCSR()
+vector<string> getTests(const string& folder)
 {
-std::string testFile;
+    vector<string> tests;
 
-std::cout << "Enter CSR test-file path: ";
-std::getline(std::cin, testFile);
-
-if (!fileExists(testFile))
-{
-    std::cerr << "Error: test file not found.\n";
-    return;
-}
-
-if (!fileExists(".\\csr.exe"))
-{
-    std::cout << "CSR executable not found. Compiling...\n";
-
-    if (!compileCSR())
-    {
-        std::cerr << "CSR compilation failed.\n";
-        return;
+    for (const auto& file : fs::directory_iterator(folder)) {
+        if (file.path().extension() == ".txt")
+            tests.push_back(file.path().string());
     }
+
+    sort(tests.begin(), tests.end());
+
+    return tests;
 }
 
-runCommand(".\\csr.exe \"" + testFile + "\"");
 
-}
-
-void runBellmanFord()
+void showTests(const vector<string>& tests)
 {
-std::string testFile;
-std::string source;
-
-std::cout << "Enter Bellman-Ford test-file path: ";
-std::getline(std::cin, testFile);
-
-if (!fileExists(testFile))
-{
-    std::cerr << "Error: test file not found.\n";
-    return;
+    for (int i = 0; i < tests.size(); i++)
+        cout << i + 1 << ". " << tests[i] << "\n";
 }
 
-std::cout << "Enter source vertex: ";
-std::getline(std::cin, source);
-
-if (!fileExists(".\\bellman_ford.exe"))
-{
-    std::cout << "Bellman-Ford executable not found. Compiling...\n";
-
-    if (!compileBellmanFord())
-    {
-        std::cerr << "Bellman-Ford compilation failed.\n";
-        return;
-    }
-}
-
-runCommand(
-    ".\\bellman_ford.exe \"" +
-    testFile +
-    "\" " +
-    source
-);
-
-}
-
-void runFloydWarshall()
-{
-std::string testFile;
-
-std::cout << "Enter Floyd-Warshall test-file path: ";
-std::getline(std::cin, testFile);
-
-if (!fileExists(testFile))
-{
-    std::cerr << "Error: test file not found.\n";
-    return;
-}
-
-if (!fileExists(".\\floyd_warshall.exe"))
-{
-    std::cout << "Floyd-Warshall executable not found. Compiling...\n";
-
-    if (!compileFloydWarshall())
-    {
-        std::cerr << "Floyd-Warshall compilation failed.\n";
-        return;
-    }
-}
-
-runCommand(
-    ".\\floyd_warshall.exe \"" +
-    testFile +
-    "\""
-);
-
-}
 
 int main()
 {
-while (true)
-{
-std::cout
-<< "\n========================================\n"
-<< "        CS509 ASSIGNMENT WRAPPER\n"
-<< "========================================\n"
-<< "1. Compile all assignments\n"
-<< "2. Run GEMM\n"
-<< "3. Run CSR Graph\n"
-<< "4. Run Bellman-Ford\n"
-<< "5. Run Floyd-Warshall\n"
-<< "0. Exit\n"
-<< "========================================\n"
-<< "Enter choice: ";
-
-    std::string choice;
-    std::getline(std::cin, choice);
-
-    if (choice == "0")
+    while (true)
     {
-        std::cout << "Exiting wrapper.\n";
-        break;
-    }
+        cout << "\n========================================\n";
+        cout << "          CS509 COMMON WRAPPER\n";
+        cout << "========================================\n";
 
-    if (choice == "1")
-    {
-        if (compileAll())
+        cout << "\nSelect Assignment:\n";
+        cout << "1. Assignment 1\n";
+        cout << "2. Assignment 2\n";
+        cout << "3. Assignment 3\n";
+        cout << "0. Exit\n";
+
+        int assignment;
+        cout << "\nEnter choice: ";
+        cin >> assignment;
+
+        if (assignment == 0)
+            break;
+
+
+        // ==========================================
+        // ASSIGNMENT 1
+        // ==========================================
+
+        if (assignment == 1)
         {
-            std::cout
-                << "\nAll assignments compiled successfully.\n";
+            cout << "\nSelect Algorithm:\n";
+            cout << "1. GEMM\n";
+            cout << "2. CSR Graph\n";
+            cout << "0. Back\n";
+
+            int choice;
+            cout << "\nEnter choice: ";
+            cin >> choice;
+
+            if (choice == 0)
+                continue;
+
+
+            string exe;
+            string testFolder;
+            string compileCommand;
+
+
+            if (choice == 1)
+            {
+                exe = "gemm";
+                testFolder = "assignment_01/01_GEMM/tests";
+
+                compileCommand =
+                    "g++ -std=c++17 -O2 "
+                    "assignment_01/01_GEMM/src/gemm.cpp "
+                    "assignment_01/01_GEMM/driver/driver_gemm.cpp "
+                    "-o gemm";
+            }
+            else if (choice == 2)
+            {
+                exe = "csr";
+                testFolder = "assignment_01/02_CSR_Graph/tests";
+
+                compileCommand =
+                    "g++ -std=c++17 -O2 "
+                    "assignment_01/02_CSR_Graph/src/csr_graph.cpp "
+                    "assignment_01/02_CSR_Graph/driver/driver_csr.cpp "
+                    "-o csr";
+            }
+            else
+            {
+                cout << "\nInvalid choice.\n";
+                continue;
+            }
+
+
+            if (!run(compileCommand))
+                continue;
+
+
+            vector<string> tests = getTests(testFolder);
+
+            cout << "\nSelect Test Case:\n";
+            showTests(tests);
+            cout << "0. Back\n";
+
+            int test;
+            cout << "\nEnter choice: ";
+            cin >> test;
+
+            if (test == 0)
+                continue;
+
+            if (test < 1 || test > tests.size())
+            {
+                cout << "\nInvalid test case.\n";
+                continue;
+            }
+
+            run("./" + exe + " \"" + tests[test - 1] + "\"");
         }
+
+
+        // ==========================================
+        // ASSIGNMENT 2
+        // ==========================================
+
+        else if (assignment == 2)
+        {
+            cout << "\nSelect Algorithm:\n";
+            cout << "1. Bellman-Ford\n";
+            cout << "2. Floyd-Warshall\n";
+            cout << "0. Back\n";
+
+            int choice;
+            cout << "\nEnter choice: ";
+            cin >> choice;
+
+            if (choice == 0)
+                continue;
+
+
+            string exe;
+            string testFolder;
+            string compileCommand;
+
+
+            if (choice == 1)
+            {
+                exe = "bellman_ford";
+                testFolder = "assignment_02/01_Bellman_Ford/tests";
+
+                compileCommand =
+                    "g++ -std=c++17 -O2 "
+                    "assignment_01/02_CSR_Graph/src/csr_graph.cpp "
+                    "assignment_02/01_Bellman_Ford/src/bellman_ford.cpp "
+                    "assignment_02/01_Bellman_Ford/driver/driver_bellman_ford.cpp "
+                    "-o bellman_ford";
+            }
+            else if (choice == 2)
+            {
+                exe = "floyd_warshall";
+                testFolder = "assignment_02/02_Floyd_Warshall/tests";
+
+                compileCommand =
+                    "g++ -std=c++17 -O2 "
+                    "assignment_02/02_Floyd_Warshall/src/floyd_warshall.cpp "
+                    "assignment_02/02_Floyd_Warshall/driver/driver_floyd_warshall.cpp "
+                    "-o floyd_warshall";
+            }
+            else
+            {
+                cout << "\nInvalid choice.\n";
+                continue;
+            }
+
+
+            if (!run(compileCommand))
+                continue;
+
+
+            vector<string> tests = getTests(testFolder);
+
+            cout << "\nSelect Test Case:\n";
+            showTests(tests);
+            cout << "0. Back\n";
+
+            int test;
+            cout << "\nEnter choice: ";
+            cin >> test;
+
+            if (test == 0)
+                continue;
+
+            if (test < 1 || test > tests.size())
+            {
+                cout << "\nInvalid test case.\n";
+                continue;
+            }
+
+            run("./" + exe + " \"" + tests[test - 1] + "\"");
+        }
+
+
+        // ==========================================
+        // ASSIGNMENT 3
+        // ==========================================
+
+        else if (assignment == 3)
+        {
+            cout << "\nSelect Algorithm:\n";
+            cout << "1. Kruskal\n";
+            cout << "2. Prim\n";
+            cout << "0. Back\n";
+
+            int choice;
+            cout << "\nEnter choice: ";
+            cin >> choice;
+
+            if (choice == 0)
+                continue;
+
+
+            string exe;
+            string testFolder;
+            string compileCommand;
+
+
+            if (choice == 1)
+            {
+                exe = "kruskal";
+                testFolder = "assignment_03/tests";
+
+                compileCommand =
+                    "g++ -std=c++17 -O2 "
+                    "assignment_01/02_CSR_Graph/src/csr_graph.cpp "
+                    "assignment_03/01_Kruskal/src/kruskal.cpp "
+                    "assignment_03/01_Kruskal/driver/driver_kruskal.cpp "
+                    "-o kruskal";
+            }
+            else if (choice == 2)
+            {
+                exe = "prim";
+                testFolder = "assignment_03/tests";
+
+                compileCommand =
+                    "g++ -std=c++17 -O2 "
+                    "assignment_01/02_CSR_Graph/src/csr_graph.cpp "
+                    "assignment_03/02_Prim/src/prim.cpp "
+                    "assignment_03/02_Prim/driver/driver_prim.cpp "
+                    "-o prim";
+            }
+            else
+            {
+                cout << "\nInvalid choice.\n";
+                continue;
+            }
+
+
+            if (!run(compileCommand))
+                continue;
+
+
+            vector<string> tests = getTests(testFolder);
+
+            cout << "\nSelect Test Case:\n";
+            showTests(tests);
+            cout << "0. Back\n";
+
+            int test;
+            cout << "\nEnter choice: ";
+            cin >> test;
+
+            if (test == 0)
+                continue;
+
+            if (test < 1 || test > tests.size())
+            {
+                cout << "\nInvalid test case.\n";
+                continue;
+            }
+
+            run("./" + exe + " \"" + tests[test - 1] + "\"");
+        }
+
+
         else
         {
-            std::cerr
-                << "\nOne or more compilations failed.\n";
+            cout << "\nInvalid assignment choice.\n";
         }
     }
-    else if (choice == "2")
-    {
-        runGEMM();
-    }
-    else if (choice == "3")
-    {
-        runCSR();
-    }
-    else if (choice == "4")
-    {
-        runBellmanFord();
-    }
-    else if (choice == "5")
-    {
-        runFloydWarshall();
-    }
-    else
-    {
-        std::cerr
-            << "Invalid choice. Please select 0-5.\n";
-    }
+
+
+    cout << "\nWrapper closed.\n";
+
+    return 0;
 }
 
-return 0;
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
