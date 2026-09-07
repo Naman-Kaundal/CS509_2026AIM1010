@@ -4,37 +4,48 @@
 
 This repository contains the implementation for the CS509 laboratory work.
 
-For Assignment 3, the repository implements Minimum Spanning Tree (MST) algorithms for weighted undirected graphs using CSR (Compressed Sparse Row) representation.
+For Assignment 4, the repository implements graph algorithms for sparse graphs using CSR (Compressed Sparse Row) representation.
 
-The Assignment 3 algorithms implemented are:
+The Assignment 4 individual algorithms implemented are:
 
-* Kruskal's Algorithm
-* Prim's Algorithm
+* Greedy Vertex Coloring using Welsh-Powell ordering
 
-Both algorithms use the same graph inputs so that their MST results and execution times can be compared.
+* PageRank
+
+Both algorithms use the CSR graph representation already implemented in Assignment 1. The adjacency-list graph is converted to CSR before the corresponding algorithm is executed.
 
 The implementation is written in C++ and includes separate source files, drivers, test cases, and a common wrapper for compilation and execution.
 
+The buddy tasks specified in the assignment are not included in this implementation.
+
 ---
 
-## Student 
-| **Student Name** | Naman Kaundal |
-| **Entry Number** | 2026AIM1010 |
-| **Programme** | M.Tech Artificial Intelligence |
-| **Course** | CS509 |
-| **Assignment** | Assignment 3 |
-| **Assignment Mode** | Individual |
+## Student
+
+| **Student Name**    | Naman Kaundal                  |
+| ------------------- | ------------------------------ |
+| **Entry Number**    | 2026AIM1010                    |
+| **Programme**       | M.Tech Artificial Intelligence |
+| **Course**          | CS509                          |
+| **Assignment**      | Assignment 4                   |
+| **Assignment Mode** | Individual                     |
 
 ---
 
 ## Language and Environment
 
 * **Programming Language:** C++
+
 * **Standard:** C++17
+
 * **Compiler:** GNU G++
+
 * **Optimization:** `-O2`
+
 * **Operating System:** Ubuntu through WSL
+
 * **Shell:** Ubuntu Terminal
+
 * **Editor:** Visual Studio Code
 
 All commands in this README are intended to be executed from the repository root.
@@ -43,40 +54,101 @@ All commands in this README are intended to be executed from the repository root
 
 ## Directory Structure
 
-```
 CS509_2026AIM1010/
-│
-├── assignment_03/
-│   ├── 01_Kruskal/
-│   │   ├── src/
-│   │   │   ├── kruskal.cpp
-│   │   │   └── kruskal.h
-│   │   │
-│   │   └── driver/
-│   │       └── driver_kruskal.cpp
-│   │
-│   ├── 02_Prim/
-│   │   ├── src/
-│   │   │   ├── prim.cpp
-│   │   │   └── prim.h
-│   │   │
-│   │   └── driver/
-│   │       └── driver_prim.cpp
-│   │
-│   └── tests/
-│       ├── mst_10.txt
-│       ├── mst_100.txt
-│       ├── mst_10000.txt
-│       ├── mst_50000.txt
-│       └── mst_100000.txt
-│
-├── common_wrapper/
-│   └── wrapper.cpp
-│
-└── README.md
-```
 
-The CSR graph implementation used by the MST algorithms is reused from the CSR implementation already present in the repository. The adjacency-list-to-CSR conversion is performed before the MST algorithm is timed.
+│
+
+├── assignment_01/
+
+│   └── 02_CSR_Graph/
+
+│       └── src/
+
+│           ├── csr_graph.cpp
+
+│           └── csr_graph.h
+
+│
+
+├── assignment_04/
+
+│   │
+
+│   ├── 01_Graph_Coloring/
+
+│   │   ├── src/
+
+│   │   │   ├── graph_coloring.cpp
+
+│   │   │   └── graph_coloring.h
+
+│   │   │
+
+│   │   ├── driver/
+
+│   │   │   └── driver_graph_coloring.cpp
+
+│   │   │
+
+│   │   └── tests/
+
+│   │       ├── color_10.txt
+
+│   │       ├── color_100.txt
+
+│   │       ├── color_10000.txt
+
+│   │       ├── color_50000.txt
+
+│   │       └── color_100000.txt
+
+│   │
+
+│   ├── 02_PageRank/
+
+│   │   ├── src/
+
+│   │   │   ├── pagerank.cpp
+
+│   │   │   └── pagerank.h
+
+│   │   │
+
+│   │   ├── driver/
+
+│   │   │   └── driver_pagerank.cpp
+
+│   │   │
+
+│   │   └── tests/
+
+│   │       ├── pagerank_10.txt
+
+│   │       ├── pagerank_100.txt
+
+│   │       ├── pagerank_1000.txt
+
+│   │       ├── pagerank_10000.txt
+
+│   │       └── pagerank_50000.txt
+
+│   │
+
+│   └── readme.md
+
+│
+
+├── common_wrapper/
+
+│   └── wrapper.cpp
+
+│
+
+└── README.md
+
+The CSR graph implementation used by both Assignment 4 algorithms is reused from the CSR implementation already present in Assignment 1.
+
+The adjacency-list graph is converted to CSR before the corresponding algorithm is executed. The CSR conversion is treated as preprocessing and is not included in the measured algorithm execution time.
 
 ---
 
@@ -84,13 +156,13 @@ The CSR graph implementation used by the MST algorithms is reused from the CSR i
 
 The common wrapper provides a single menu-based interface for compiling and running the algorithms in the repository.
 
-For Assignment 3, the wrapper provides:
+For Assignment 4, the wrapper provides:
 
 ```
-3. Assignment 3
+4. Assignment 4
 
-1. Kruskal
-2. Prim
+1. Graph Coloring
+2. PageRank
 0. Back
 ```
 
@@ -100,106 +172,129 @@ The user can select the algorithm and then select the required test case.
 
 From the repository root:
 
-```bash
+```
 g++ -std=c++17 -O2 common_wrapper/wrapper.cpp -o wrapper
 ```
 
 ## Execution
 
-```bash
+```
 ./wrapper
 ```
 
 Select:
 
 ```
-3. Assignment 3
+4. Assignment 4
 ```
 
 and then select either:
 
 ```
-1. Kruskal
+1. Graph Coloring
 ```
 
 or:
 
 ```
-2. Prim
+2. PageRank
 ```
 
-The wrapper automatically detects the `.txt` test files present in:
-
-```
-assignment_03/tests/
-```
+The wrapper provides the available `.txt` test files for the selected algorithm.
 
 ---
 
-# Assignment 03 – Minimum Spanning Tree (MST)
+# Assignment 04 – Graph Coloring and PageRank
 
 ## Assignment Mode
 
 Individual implementation.
 
-The assignment requires the implementation and comparison of:
+The assignment requires the implementation of:
 
-* Kruskal's Algorithm
-* Prim's Algorithm
+* Greedy Vertex Coloring using Welsh-Powell ordering
 
-Both algorithms are executed on the same weighted undirected graph inputs. The Assignment 3 specification requires the same graph files to be used for both algorithms so that their results and execution times can be compared.
+* PageRank
+
+The buddy tasks are not included in this implementation.
+
+Both algorithms operate on graphs represented using CSR after the input adjacency-list graph has been converted using the existing Assignment 1 CSR implementation.
 
 ## Objective
 
-The objective is to implement Minimum Spanning Tree algorithms for a connected, weighted, undirected graph.
-
-A Minimum Spanning Tree connects all vertices using exactly `V - 1` edges while minimizing the total sum of edge weights. The selected edges must not form a cycle.
+The objective of Assignment 4 is to implement graph algorithms efficiently for sparse graphs using CSR representation.
 
 The two implemented algorithms are:
 
-* Kruskal's Algorithm
-* Prim's Algorithm
+* Greedy Vertex Coloring
 
-Both algorithms should produce the same minimum total MST weight for the same input graph. If multiple MSTs exist, the selected edge sets may differ while the minimum total weight remains the same.
+* PageRank
+
+The algorithms are implemented separately and are tested on graphs of different sizes.
+
+The execution time of each algorithm is measured separately from input processing and CSR conversion.
 
 ---
 
 ## Algorithm / Approach
 
-### Kruskal's Algorithm
+### Greedy Vertex Coloring
 
-Kruskal's algorithm is a greedy MST algorithm.
-
-The implementation:
-
-1. Extracts the graph edges.
-2. Sorts the edges in non-decreasing order of weight.
-3. Processes the edges in sorted order.
-4. Adds an edge only if its endpoints currently belong to different components.
-5. Uses a Disjoint Set Union (DSU / Union-Find) structure for cycle detection.
-6. Stops after `V - 1` edges have been selected.
-
-This follows the required approach of sorting all graph edges and selecting edges that do not create a cycle.
-
-### Prim's Algorithm
-
-Prim's algorithm is also a greedy MST algorithm.
+The Graph Coloring implementation uses the required Greedy Welsh-Powell approach.
 
 The implementation:
 
-1. Starts from vertex 0.
-2. Maintains the vertices already included in the MST.
-3. Selects the minimum-weight edge connecting the current tree to an unvisited vertex.
-4. Adds the selected vertex to the MST.
-5. Continues until all vertices are included.
+1. Calculates the degree of every vertex using the CSR `rowPtr` array.
 
-The assignment recommends starting from vertex 0 for reproducibility and using a minimum-priority queue for an efficient implementation.
+2. Creates an ordering of vertices based on decreasing degree.
+
+3. Processes vertices according to this ordering.
+
+4. Assigns the smallest available color to each vertex.
+
+5. Checks the colors of neighbouring vertices using the CSR adjacency information.
+
+6. Verifies that no adjacent vertices have the same color.
+
+7. Reports the number of colors used and whether the resulting coloring is valid.
+
+The Welsh-Powell ordering is based on processing vertices in non-increasing order of degree.
+
+The CSR representation is used directly by the coloring algorithm.
+
+### PageRank
+
+The PageRank implementation uses the iterative PageRank algorithm.
+
+The implementation:
+
+1. Initializes every vertex with rank `1 / V`.
+
+2. Uses the damping factor provided in the input.
+
+3. Calculates new PageRank values from the ranks of the previous iteration.
+
+4. Distributes the rank of each vertex among its outgoing neighbours.
+
+5. Handles dangling vertices separately.
+
+6. Calculates the total change between the old and new rank vectors.
+
+7. Stops when the change is less than or equal to the specified tolerance.
+
+8. Stops at the maximum number of iterations if convergence is not reached.
+
+9. Reports the final rank of every vertex, the sum of ranks, number of iterations, convergence status, and execution time.
+
+The PageRank implementation uses simultaneous updates, meaning that the new rank vector is calculated using the values from the previous iteration.
 
 ---
 
 ## Input Format
 
-The input is a weighted undirected adjacency-list graph.
+### Graph Coloring
+
+The Graph Coloring input is an unweighted undirected adjacency-list graph.
 
 The first line contains:
 
@@ -207,29 +302,81 @@ The first line contains:
 V E
 ```
 
-where `V` = number of vertices and `E` = number of undirected edges.
+where `V` is the number of vertices and `E` is the number of undirected edges.
 
-Each following line contains the adjacency list of one vertex:
+Each following line contains:
 
 ```
-u degree neighbor1 weight1 neighbor2 weight2 ...
+vertex degree neighbour1 neighbour2 ...
 ```
 
 The complete format is:
 
 ```
 V E
-u0 degree neighbor1 weight1 neighbor2 weight2 ...
-u1 degree neighbor1 weight1 neighbor2 weight2 ...
+
+u0 degree neighbour1 neighbour2 ...
+
+u1 degree neighbour1 neighbour2 ...
+
 ...
-u(V-1) degree neighbor1 weight1 neighbor2 weight2 ...
+
+u(V-1) degree neighbour1 neighbour2 ...
 ```
 
-For an undirected graph, every edge appears in the adjacency lists of both of its endpoints with the same weight, while `E` counts each undirected edge only once. The graph must be connected.
+For an undirected graph, an edge is present in the adjacency lists of both of its endpoints.
 
-The same input file is used for both Kruskal and Prim.
+The value of `E` represents the number of undirected edges.
 
-The provided test cases use integer edge weights.
+The graph is read as an adjacency list and then converted to CSR using the existing Assignment 1 CSR implementation.
+
+### PageRank
+
+The PageRank input is a directed adjacency-list graph.
+
+The first line contains:
+
+```
+V E
+```
+
+where `V` is the number of vertices and `E` is the number of directed edges.
+
+Each following line contains:
+
+```
+vertex outdegree neighbour1 neighbour2 ...
+```
+
+The complete graph section is:
+
+```
+V E
+
+u0 outdegree neighbour1 neighbour2 ...
+
+u1 outdegree neighbour1 neighbour2 ...
+
+...
+
+u(V-1) outdegree neighbour1 neighbour2 ...
+```
+
+For PageRank, an edge from `u` to `v` does not imply an edge from `v` to `u`.
+
+The graph section is followed by the PageRank parameters:
+
+```
+DAMPING 0.85
+TOLERANCE 0.0001
+MAX_ITERATIONS 100
+```
+
+The damping factor must be between 0 and 1.
+
+The tolerance specifies the convergence threshold.
+
+`MAX_ITERATIONS` specifies the maximum number of PageRank iterations.
 
 ---
 
@@ -237,189 +384,332 @@ The provided test cases use integer edge weights.
 
 The input graph is initially stored as an adjacency list.
 
-Before calling either MST algorithm, the adjacency-list representation is converted into CSR format using the existing CSR graph implementation.
+Before either Assignment 4 algorithm is executed, the adjacency-list representation is converted into CSR format using the existing CSR graph implementation from Assignment 1.
 
 The CSR representation consists of:
 
 * `rowPtr`
+
 * `colIdx`
+
 * `weights`
 
-The conversion is treated as preprocessing and is not included in the measured MST execution time.
+For Graph Coloring, the algorithm uses the CSR row pointer and neighbour information.
 
-The Assignment 3 specification explicitly requires graph inputs to be converted to CSR before the algorithm is called, and the CSR conversion time must not be included in algorithm timing.
+For PageRank, the algorithm uses the CSR row pointer and outgoing neighbour information.
+
+The Assignment 1 CSR implementation is reused directly. No separate CSR conversion implementation is created for Assignment 4.
+
+The CSR conversion is treated as preprocessing and is not included in the measured algorithm execution time.
+
+The algorithm timer starts only after CSR conversion has been completed.
 
 ---
 
 ## File Structure
 
-### Kruskal
+### Graph Coloring
 
 ```
-assignment_03/01_Kruskal/
+assignment_04/01_Graph_Coloring/
+
 │
+
 ├── src/
-│   ├── kruskal.cpp
-│   └── kruskal.h
+
+│   ├── graph_coloring.cpp
+
+│   └── graph_coloring.h
+
 │
-└── driver/
-    └── driver_kruskal.cpp
+
+├── driver/
+
+│   └── driver_graph_coloring.cpp
+
+│
+
+└── tests/
+
+    ├── color_10.txt
+
+    ├── color_100.txt
+
+    ├── color_10000.txt
+
+    ├── color_50000.txt
+
+    └── color_100000.txt
 ```
 
-`kruskal.cpp` contains the core Kruskal MST implementation.
+`graph_coloring.cpp` contains the core Greedy Welsh-Powell graph coloring implementation.
 
-`kruskal.h` contains the declarations required by the implementation.
+`graph_coloring.h` contains the declarations and result structure required by the implementation.
 
-`driver_kruskal.cpp` reads the input file, prepares the CSR graph, calls Kruskal's algorithm, and reports the result and execution time.
+`driver_graph_coloring.cpp` reads the input graph, uses the existing Assignment 1 CSR conversion, calls the Graph Coloring algorithm, and reports the colors and execution time.
 
-### Prim
+### PageRank
 
 ```
-assignment_03/02_Prim/
+assignment_04/02_PageRank/
+
 │
+
 ├── src/
-│   ├── prim.cpp
-│   └── prim.h
+
+│   ├── pagerank.cpp
+
+│   └── pagerank.h
+
 │
-└── driver/
-    └── driver_prim.cpp
+
+├── driver/
+
+│   └── driver_pagerank.cpp
+
+│
+
+└── tests/
+
+    ├── pagerank_10.txt
+
+    ├── pagerank_100.txt
+
+    ├── pagerank_1000.txt
+
+    ├── pagerank_10000.txt
+
+    └── pagerank_50000.txt
 ```
 
-`prim.cpp` contains the core Prim MST implementation.
+`pagerank.cpp` contains the core iterative PageRank implementation.
 
-`prim.h` contains the declarations required by the implementation.
+`pagerank.h` contains the declarations and result structure required by the implementation.
 
-`driver_prim.cpp` reads the input file, prepares the CSR graph, calls Prim's algorithm, and reports the result and execution time.
+`driver_pagerank.cpp` reads the input graph and PageRank parameters, uses the existing Assignment 1 CSR conversion, calls PageRank, and reports the final ranks and execution time.
 
 ### Test Files
 
+Graph Coloring test cases:
+
 ```
-assignment_03/tests/
-├── mst_10.txt
-├── mst_100.txt
-├── mst_10000.txt
-├── mst_50000.txt
-└── mst_100000.txt
+assignment_04/01_Graph_Coloring/tests/
+
+├── color_10.txt
+├── color_100.txt
+├── color_10000.txt
+├── color_50000.txt
+└── color_100000.txt
 ```
 
-The required MST graph sizes are 10, 100, 10,000, 50,000 and 100,000 vertices. The same graph files are used for both MST algorithms.
+The required Graph Coloring graph sizes are:
+
+* 10 vertices
+
+* 100 vertices
+
+* 10,000 vertices
+
+* 50,000 vertices
+
+* 100,000 vertices
+
+PageRank test cases:
+
+```
+assignment_04/02_PageRank/tests/
+
+├── pagerank_10.txt
+├── pagerank_100.txt
+├── pagerank_1000.txt
+├── pagerank_10000.txt
+└── pagerank_50000.txt
+```
+
+The required PageRank graph sizes are:
+
+* 10 vertices
+
+* 100 vertices
+
+* 1,000 vertices
+
+* 10,000 vertices
+
+* 50,000 vertices
 
 ---
 
 ## Compilation
 
-### Kruskal
+### Graph Coloring
 
 From the repository root:
 
-```bash
+```
 g++ -std=c++17 -O2 \
   assignment_01/02_CSR_Graph/src/csr_graph.cpp \
-  assignment_03/01_Kruskal/src/kruskal.cpp \
-  assignment_03/01_Kruskal/driver/driver_kruskal.cpp \
-  -o kruskal
+  assignment_04/01_Graph_Coloring/src/graph_coloring.cpp \
+  assignment_04/01_Graph_Coloring/driver/driver_graph_coloring.cpp \
+  -o graph_coloring
 ```
 
-### Prim
+### PageRank
 
-```bash
+```
 g++ -std=c++17 -O2 \
   assignment_01/02_CSR_Graph/src/csr_graph.cpp \
-  assignment_03/02_Prim/src/prim.cpp \
-  assignment_03/02_Prim/driver/driver_prim.cpp \
-  -o prim
+  assignment_04/02_PageRank/src/pagerank.cpp \
+  assignment_04/02_PageRank/driver/driver_pagerank.cpp \
+  -o pagerank
 ```
+
+---
 
 ## Execution
 
-Run the commands from the repository root. In the execution command, replace the test-case filename with the desired test case file you want to run.
+Run the commands from the repository root.
 
-### Kruskal
+### Graph Coloring
 
-```bash
-./kruskal assignment_03/tests/mst_10.txt
+For the 10-vertex test case:
+
+```
+./graph_coloring assignment_04/01_Graph_Coloring/tests/color_10.txt
 ```
 
-### Prim
-
-```bash
-./prim assignment_03/tests/mst_10.txt
-```
+For the other test cases, replace the filename with the required test file.
 
 The program reports:
 
-* Number of MST edges
-* Total MST weight
+* Color assigned to every vertex
+
+* Number of colors used
+
+* Whether the coloring is valid
+
 * Algorithm execution time
 
-Only the algorithm execution time is measured. File reading, parsing, CSR conversion, and result printing are outside the timed region, as required by the assignment.
+### PageRank
+
+For the 10-vertex test case:
+
+```
+./pagerank assignment_04/02_PageRank/tests/pagerank_10.txt
+```
+
+For the other test cases, replace the filename with the required test file.
+
+The program reports:
+
+* Damping factor
+
+* PageRank of every vertex
+
+* Sum of ranks
+
+* Number of iterations
+
+* Convergence status
+
+* Algorithm execution time
+
+Only the algorithm execution time is measured.
+
+File reading, input parsing, CSR conversion, and result printing are outside the timed region.
 
 ---
 
 ## Test Cases and Result Table
 
-The following test cases were used for both Kruskal and Prim:
+### Graph Coloring Test Cases
 
-| Test Case | Vertices |
-|---|---|
-| mst_10.txt | 10 |
-| mst_100.txt | 100 |
-| mst_10000.txt | 10,000 |
-| mst_50000.txt | 50,000 |
-| mst_100000.txt | 100,000 |
+| Test Case        | Vertices |
+| ---------------- | -------: |
+| color_10.txt     |       10 |
+| color_100.txt    |      100 |
+| color_10000.txt  |   10,000 |
+| color_50000.txt  |   50,000 |
+| color_100000.txt |  100,000 |
 
-### Kruskal Results
+### Graph Coloring Results
 
-| Test File | Vertices | MST Edges | Total MST Weight | Time (ms) |
-|---|---|---|---|---|
-| mst_10.txt | 10 | 9 | 27.00 | 0.00 |
-| mst_100.txt | 100 | 99 | 2160.00 | 0.02 |
-| mst_10000.txt | 10,000 | 9,999 | 200115.00 | 1.88 |
-| mst_50000.txt | 50,000 | 49,999 | 1013030.00 | 10.08 |
-| mst_100000.txt | 100,000 | 99,999 | 2023168.00 | 20.09 |
+| Test File        | Vertices |    Colors Used | Valid          |      Time (ms) |
+| ---------------- | -------: | -------------: | -------------- | -------------: |
+| color_10.txt     |       10 | To be recorded | To be recorded | To be recorded |
+| color_100.txt    |      100 | To be recorded | To be recorded | To be recorded |
+| color_10000.txt  |   10,000 | To be recorded | To be recorded | To be recorded |
+| color_50000.txt  |   50,000 | To be recorded | To be recorded | To be recorded |
+| color_100000.txt |  100,000 | To be recorded | To be recorded | To be recorded |
 
-### Prim Results
+### PageRank Test Cases
 
-| Test File | Vertices | MST Edges | Total MST Weight | Time (ms) |
-|---|---|---|---|---|
-| mst_10.txt | 10 | 9 | 27.00 | 0.00 |
-| mst_100.txt | 100 | 99 | 2160.00 | 0.03 |
-| mst_10000.txt | 10,000 | 9,999 | 200115.00 | 2.77 |
-| mst_50000.txt | 50,000 | 49,999 | 1013030.00 | 15.72 |
-| mst_100000.txt | 100,000 | 99,999 | 2023168.00 | 43.51 |
+| Test Case          | Vertices |
+| ------------------ | -------: |
+| pagerank_10.txt    |       10 |
+| pagerank_100.txt   |      100 |
+| pagerank_1000.txt  |    1,000 |
+| pagerank_10000.txt |   10,000 |
+| pagerank_50000.txt |   50,000 |
 
-Both algorithms produced the same total MST weight for every test case, satisfying the correctness requirement that the MST weight must match when both algorithms are run on the same graph.
+### PageRank Results
 
-For the recorded runs, Kruskal's algorithm was faster than Prim's algorithm on the larger test cases.
+| Test File          | Vertices |     Iterations | Converged      |      Time (ms) |
+| ------------------ | -------: | -------------: | -------------- | -------------: |
+| pagerank_10.txt    |       10 | To be recorded | To be recorded | To be recorded |
+| pagerank_100.txt   |      100 | To be recorded | To be recorded | To be recorded |
+| pagerank_1000.txt  |    1,000 | To be recorded | To be recorded | To be recorded |
+| pagerank_10000.txt |   10,000 | To be recorded | To be recorded | To be recorded |
+| pagerank_50000.txt |   50,000 | To be recorded | To be recorded | To be recorded |
 
-The measured execution time can vary depending on the system and runtime conditions.
+The actual execution times depend on the system and runtime conditions and should be recorded after running the final implementation.
 
 ---
 
 ## Complexity
 
-### Kruskal's Algorithm
+### Greedy Vertex Coloring
 
-The main operation is sorting the graph edges.
+The implementation first calculates the degree of every vertex using CSR.
 
-**Time complexity:** O(E log E)
+The vertices are then sorted by decreasing degree.
 
-The Disjoint Set Union operations are approximately constant amortized time when path compression and union by rank/size are used.
+The sorting operation requires:
 
-**Space complexity:** O(V + E) for storing the graph, edge information, and DSU structures.
+**Time complexity:** O(V log V)
 
-### Prim's Algorithm
+The coloring phase checks the neighbours of each vertex. For a sparse graph, this is based on the number of adjacency entries.
 
-Using a min-priority queue with the CSR graph:
+The overall coloring phase is approximately:
 
-**Time complexity:** O(E log V)
+**Time complexity:** O(V log V + E × C)
+
+where `C` is the number of colors considered during the greedy coloring process.
 
 **Space complexity:** O(V + E)
 
-The CSR graph itself requires storage proportional to the number of vertices and adjacency entries.
+The CSR representation requires storage proportional to the vertices and adjacency entries, while the coloring algorithm requires additional storage for degree, ordering, and color arrays.
+
+### PageRank
+
+Each PageRank iteration processes the vertices and their outgoing edges.
+
+For a graph with `V` vertices and `E` directed edges:
+
+**Time complexity:** O(I × (V + E))
+
+where `I` is the number of iterations performed.
+
+**Space complexity:** O(V + E)
+
+The CSR graph requires O(V + E) storage, while the PageRank algorithm maintains the current and new rank vectors.
 
 ---
 
 ## References
-* CS509 Assignment 3 specification — Minimum Spanning Tree (MST), Kruskal's Algorithm, Prim's Algorithm and CSR requirements.
-* CS509 Assignment 3 specification — weighted undirected graph input/output format and MST requirements.
+
+* CS509 Assignment 4 specification — Greedy Vertex Coloring using Welsh-Powell ordering.
+
+* CS509 Assignment 4 specification — PageRank algorithm, convergence, damping factor, dangling vertices, input/output format, and required test cases.
+
+* CS509 Assignment 1 — CSR Graph implementation reused for Assignment 4.
