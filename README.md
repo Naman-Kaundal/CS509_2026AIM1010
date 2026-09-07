@@ -4,7 +4,7 @@
 
 This repository contains the implementations for the CS509 laboratory assignments.
 
-The repository covers matrix multiplication, graph representation using Compressed Sparse Row (CSR), shortest-path algorithms including Bellman-Ford and Floyd-Warshall, and minimum spanning tree algorithms including Kruskal and Prim.
+The repository covers matrix multiplication, graph representation using Compressed Sparse Row (CSR), shortest-path algorithms including Bellman-Ford and Floyd-Warshall, minimum spanning tree algorithms including Kruskal and Prim, and Vertex Coloring and Page Rank algorithms.
 
 The implementations are written in C++ and include separate source files, drivers, test cases, and a common wrapper for compilation and execution.
 
@@ -12,12 +12,11 @@ The implementations are written in C++ and include separate source files, driver
 
 ## Student
 
-| Field | Value |
-|---|---|
-| **Student Name** | Naman Kaundal |
-| **Entry Number** | 2026AIM1010 |
-| **Programme** | M.Tech Artificial Intelligence |
-| **Course** | CS509 |
+| **Student Name**          | Naman Kaundal                  |
+| **Entry Number**          | 2026AIM1010                    |
+| **Programme**             | M.Tech Artificial Intelligence |
+| **Course**                | CS509                          |
+| **Assignment Mode**       | Individual                     |
 
 ---
 
@@ -83,6 +82,17 @@ CS509_2026AIM1010/
 │       ├── mst_50000.txt
 │       └── mst_100000.txt
 │
+├── assignment_04/
+│   ├── 01_Graph_Coloring/
+│   │   ├── src/
+│   │   ├── driver/
+│   │   └── tests/
+│   │
+│   └── 02_PageRank/
+│       ├── src/
+│       ├── driver/
+│       └── tests/
+│
 ├── common_wrapper/
 │   └── wrapper.cpp
 │
@@ -93,7 +103,7 @@ CS509_2026AIM1010/
 
 # Common Wrapper: Build and Usage
 
-The common wrapper provides a single interface for compiling and running all assignments.
+The common wrapper provides a single menu-based interface for compiling and running all assignments.
 
 The wrapper first asks the user to select the assignment, then the algorithm, and finally the required test case.
 
@@ -108,19 +118,47 @@ Select Assignment:
 1. Assignment 1
 2. Assignment 2
 3. Assignment 3
+4. Assignment 4
 0. Exit
 ```
 
-For Assignment 3, the algorithm menu is:
+### Assignment 1
 
+```text
+Select Algorithm:
+1. GEMM
+2. CSR Graph
+0. Back
 ```
+
+### Assignment 2
+
+```text
+Select Algorithm:
+1. Bellman-Ford
+2. Floyd-Warshall
+0. Back
+```
+
+### Assignment 3
+
+```text
 Select Algorithm:
 1. Kruskal
 2. Prim
 0. Back
 ```
 
-The available test cases are then displayed for the selected algorithm.
+### Assignment 4
+
+```text
+Select Algorithm:
+1. Graph Coloring
+2. PageRank
+0. Back
+```
+
+After selecting an algorithm, the wrapper displays the available `.txt` test files and allows the user to select the required test case.
 
 ### Compilation
 
@@ -136,7 +174,7 @@ g++ -std=c++17 -O2 -Wall common_wrapper/wrapper.cpp -o wrapper
 ./wrapper
 ```
 
-The wrapper can be used to compile and run the required assignment and test case.
+The wrapper can be used to compile and run all four assignments without manually entering the individual compilation commands.
 
 ---
 
@@ -745,122 +783,222 @@ Runtime measurements are machine-dependent and may vary between executions.
 
 ---
 
-# Overall Compilation and Execution Summary
+# Assignment 04 – Graph Coloring and PageRank
 
-All commands below are executed from the repository root in Ubuntu / WSL.
+## Assignment Mode
 
-## Common Wrapper
+Individual implementation.
 
-Compile:
+## Objective
 
-```bash
-g++ -std=c++17 -O2 common_wrapper/wrapper.cpp -o wrapper
+The assignment implements two graph algorithms:
+
+* Greedy Vertex Coloring using the Welsh-Powell approach
+* PageRank
+
+Both algorithms use the CSR graph representation from Assignment 01.
+
+The CSR implementation from Assignment 01 is reused rather than copied into Assignment 04.
+
+---
+
+## Assignment 04 – Graph Coloring
+
+### Objective
+
+The Graph Coloring algorithm assigns a color to every vertex of an undirected graph such that no two adjacent vertices have the same color.
+
+The implementation uses a greedy coloring approach with Welsh-Powell ordering, where vertices are processed in non-increasing order of degree.
+
+### Algorithm / Approach
+
+The vertices are first sorted according to their degree.
+
+Starting with the highest-degree vertex:
+
+1. Select the next vertex in the sorted order.
+2. Check the colors already assigned to its neighboring vertices.
+3. Assign the smallest available color.
+4. Continue until all vertices have been colored.
+5. Validate the coloring by checking that adjacent vertices have different colors.
+
+The implementation uses the CSR representation from Assignment 01 to access the neighbors of each vertex.
+
+### Input Format
+
+The test files contain unweighted undirected graphs in adjacency-list form.
+
+The first line contains:
+
+```
+V E
 ```
 
-Run:
+where `V` = number of vertices and `E` = number of undirected edges.
 
-```bash
-./wrapper
-```
+Each following line contains the vertex number, its degree, and its neighboring vertices.
 
-The wrapper provides the following menu:
+Since the graph is undirected, each edge occurs in the adjacency lists of both endpoints.
 
-```
-========================================
-          CS509 COMMON WRAPPER
-========================================
-
-Select Assignment:
-1. Assignment 1
-2. Assignment 2
-3. Assignment 3
-0. Exit
-```
-
-After selecting an assignment, the available algorithms are displayed.
-
-For Assignment 3:
+### File Structure
 
 ```
-Select Algorithm:
-1. Kruskal
-2. Prim
-0. Back
+assignment_04/01_Graph_Coloring/
+
+├── src/
+│   ├── graph_coloring.cpp
+│   └── graph_coloring.h
+│
+└── driver/
+    └── driver_graph_coloring.cpp
 ```
 
-The available test cases are then displayed for selection.
+The CSR implementation is reused from `assignment_01/02_CSR_Graph/`.
 
-## Direct Compilation and Execution - Individual
-Run the commands from the repository root. In the execution command(2nd), replace the test-case filename with the desired test case file you want to run.
-
-### GEMM
-
-```bash
-g++ -std=c++17 -O2 \
-  assignment_01/01_GEMM/src/gemm.cpp \
-  assignment_01/01_GEMM/driver/driver_gemm.cpp \
-  -o gemm
-
-./gemm assignment_01/01_GEMM/tests/gemm_test_01.txt
-```
-
-### CSR
-
-```bash
-g++ -std=c++17 -O2 \
-  assignment_01/02_CSR_Graph/src/csr_graph.cpp \
-  assignment_01/02_CSR_Graph/driver/driver_csr.cpp \
-  -o csr
-
-./csr assignment_01/02_CSR_Graph/tests/csr_10.txt
-```
-
-### Bellman-Ford
-
-```bash
-g++ -std=c++17 -O2 \
-  assignment_01/02_CSR_Graph/src/csr_graph.cpp \
-  assignment_02/01_Bellman_Ford/src/bellman_ford.cpp \
-  assignment_02/01_Bellman_Ford/driver/driver_bellman_ford.cpp \
-  -o bellman_ford
-
-./bellman_ford assignment_02/01_Bellman_Ford/tests/bf_10.txt 0
-```
-
-### Floyd-Warshall
-
-```bash
-g++ -std=c++17 -O2 \
-  assignment_02/02_Floyd_Warshall/src/floyd_warshall.cpp \
-  assignment_02/02_Floyd_Warshall/driver/driver_floyd_warshall.cpp \
-  -o floyd_warshall
-
-./floyd_warshall assignment_02/02_Floyd_Warshall/tests/fw_10.txt
-```
-
-### Kruskal
+### Compilation
 
 ```bash
 g++ -std=c++17 -O2 \
   assignment_01/02_CSR_Graph/src/csr_graph.cpp \
-  assignment_03/01_Kruskal/src/kruskal.cpp \
-  assignment_03/01_Kruskal/driver/driver_kruskal.cpp \
-  -o kruskal
-
-./kruskal assignment_03/tests/mst_10.txt
+  assignment_04/01_Graph_Coloring/src/graph_coloring.cpp \
+  assignment_04/01_Graph_Coloring/driver/driver_graph_coloring.cpp \
+  -o graph_coloring
 ```
 
-### Prim
+### Execution
+
+```bash
+./graph_coloring assignment_04/01_Graph_Coloring/tests/color_10.txt
+```
+
+### Test Cases and Result Table
+
+### Graph Coloring Results
+
+| Test File        | Vertices | Colors Used | Valid | Time(ms) |
+| ---------------- | -------: | ----------: | ----- | -------: |
+| color_10.txt     |       10 |           3 | Yes   | 0.003468 |
+| color_100.txt    |      100 |           5 | Yes   |  0.01495 |
+| color_10000.txt  |   10,000 |           6 | Yes   |  1.23687 |
+| color_50000.txt  |   50,000 |           6 | Yes   |  15.7913 |
+| color_100000.txt |  100,000 |           6 | Yes   |  7.44543 |
+
+All test cases produced valid colorings.
+
+### Complexity
+
+**Time Complexity:** O(V log V + E)
+
+**Space Complexity:** O(V + E)
+
+The main additional cost is sorting the vertices according to their degree.
+
+### References
+
+* Course assignment specification
+* Welsh-Powell graph coloring algorithm
+* CSR graph representation
+
+---
+
+## Assignment 04 – PageRank
+
+### Objective
+
+PageRank assigns an importance score to each vertex of a directed graph based on the incoming links from other vertices.
+
+The implementation uses an iterative PageRank algorithm with a damping factor and continues until the specified convergence condition is satisfied.
+
+### Algorithm / Approach
+
+The PageRank vector is initially assigned equally among all vertices.
+
+For every iteration:
+
+1. Calculate the contribution from incoming vertices.
+2. Apply the damping factor.
+3. Compute the new PageRank values.
+4. Compare the new values with the previous iteration.
+5. Continue until the convergence condition is satisfied or the maximum number of iterations is reached.
+
+The implementation uses the CSR representation from Assignment 01 for efficient access to the graph's adjacency information.
+
+### Input Format
+
+The test files contain unweighted directed graphs in adjacency-list form.
+
+The first line contains:
+
+```text
+V E
+```
+
+where `V` = number of vertices and `E` = number of directed edges.
+
+Each following line contains the vertex number, its outdegree, and its outgoing neighboring vertices.
+
+The graph input also specifies the PageRank parameters such as damping factor, tolerance, and maximum number of iterations.
+
+### File Structure
+
+```text
+assignment_04/02_PageRank/
+
+├── src/
+│   ├── pagerank.cpp
+│   └── pagerank.h
+│
+└── driver/
+    └── driver_pagerank.cpp
+```
+
+The CSR implementation is reused from `assignment_01/02_CSR_Graph/`.
+
+### Compilation
 
 ```bash
 g++ -std=c++17 -O2 \
   assignment_01/02_CSR_Graph/src/csr_graph.cpp \
-  assignment_03/02_Prim/src/prim.cpp \
-  assignment_03/02_Prim/driver/driver_prim.cpp \
-  -o prim
-
-./prim assignment_03/tests/mst_10.txt
+  assignment_04/02_PageRank/src/pagerank.cpp \
+  assignment_04/02_PageRank/driver/driver_pagerank.cpp \
+  -o pagerank
 ```
+
+### Execution
+
+```bash
+./pagerank assignment_04/02_PageRank/tests/pagerank_10.txt
+```
+
+### Test Cases and Result Table
+
+### PageRank Results
+
+| Test File          | Vertices | Iterations | Converged | Time(ms) |
+| ------------------ | -------: | ---------: | --------- | -------: |
+| pagerank_10.txt    |       10 |         10 | True      |  0.00259 |
+| pagerank_100.txt   |      100 |         15 | True      | 0.030322 |
+| pagerank_1000.txt  |    1,000 |         14 | True      | 0.248693 |
+| pagerank_10000.txt |   10,000 |         15 | True      |  3.19258 |
+| pagerank_50000.txt |   50,000 |         15 | True      |  10.0115 |
+
+All test cases converged successfully.
+
+### Complexity
+
+**Time Complexity:** O(I × (V + E))
+
+where `I` is the number of PageRank iterations.
+
+**Space Complexity:** O(V + E)
+
+The CSR representation requires O(V + E) space, while the PageRank calculation maintains the current and updated rank vectors.
+
+### References
+
+* Course assignment specification
+* PageRank algorithm
+* CSR graph representation
 
 ---
 
@@ -871,10 +1009,16 @@ g++ -std=c++17 -O2 \
 * `-O2` optimization was used for benchmark compilation.
 * Runtime measurements are machine-dependent.
 * Input loading and CSR preprocessing are kept separate from algorithm execution where applicable.
-* The CSR implementation from Assignment 01 is reused by the algorithms that require CSR.
 * Assignment 03 uses weighted undirected graphs.
 * Assignment 03 test cases use integer edge weights.
 * Kruskal's and Prim's algorithms both produce a Minimum Spanning Tree for connected graphs.
 * For all Assignment 03 test cases, both algorithms produced `V - 1` MST edges and identical total MST weights.
 * The common wrapper provides a unified compilation and execution interface for all assignments.
 * The common wrapper allows the user to select the assignment, algorithm, and test case before execution.
+* The CSR implementation from Assignment 01 is reused by Bellman-Ford, Kruskal, Prim, Graph Coloring, and PageRank.
+* CSR conversion is treated as preprocessing and is excluded from the measured algorithm execution time.
+* Graph Coloring uses unweighted undirected graphs.
+* PageRank uses unweighted directed graphs.
+* Assignment 4 contains five required Graph Coloring test sizes: 10, 100, 10,000, 50,000, and 100,000 vertices.
+* Assignment 4 contains five required PageRank test sizes: 10, 100, 1,000, 10,000, and 50,000 vertices.
+* The common wrapper supports Assignments 1 through 4.
